@@ -14,6 +14,8 @@ namespace LibraryNetCoreAPI.Utils
         {
             CreateMap<AutorCreacionDTO, Autor>();
             CreateMap<Autor, AutorDTO>();
+            CreateMap<Libro, LibroDTO>();
+            CreateMap<LibroCreacionDTO, Libro>();
         }
     }
 }

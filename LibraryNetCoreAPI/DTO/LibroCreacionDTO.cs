@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI.DTO
 {
-    public class AutorDTO
+    public class LibroCreacionDTO
     {        
-        public int Id { get; set; }
-        public string Nombre { get; set; }
+        [StringLength(maximumLength: 250)]
+        public string Titulo { get; set; }
     }
 }
