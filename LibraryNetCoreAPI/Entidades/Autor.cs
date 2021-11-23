@@ -8,6 +8,7 @@ namespace LibraryNetCoreAPI.Entidades
 {
     public class Autor
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
