@@ -1,4 +1,6 @@
-﻿using LibraryNetCoreAPI.Entidades;
+﻿using AutoMapper;
+using LibraryNetCoreAPI.DTO;
+using LibraryNetCoreAPI.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,10 +15,12 @@ namespace LibraryNetCoreAPI.Controllers
     public class AutoresController:ControllerBase
     {
         private readonly ApplicationDBContext context;
+        private readonly IMapper mapper;
 
-        public AutoresController(ApplicationDBContext context)
+        public AutoresController(ApplicationDBContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -26,13 +30,16 @@ namespace LibraryNetCoreAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Autor autor)
+        public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacionDTO)
         {
-            var existe = await context.Autores.AnyAsync(x => x.Nombre == autor.Nombre);
+            var existe = await context.Autores.AnyAsync(x => x.Nombre == autorCreacionDTO.Nombre);
             if (existe)
-                return BadRequest($"Ya existe un autor con el nombre {autor.Nombre}");
+                return BadRequest($"Ya existe un autor con el nombre {autorCreacionDTO.Nombre}");
 
+            //context.Add(autor); antes le pasábamos una instancia de Autor directamente, ahora mapeamos autorCreacionDTO a Autor y le enviamos
+            var autor = mapper.Map<Autor>(autorCreacionDTO);
             context.Add(autor);
+
             await context.SaveChangesAsync();
             return Ok();
         }
