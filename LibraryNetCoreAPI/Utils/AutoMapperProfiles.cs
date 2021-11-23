@@ -13,6 +13,7 @@ namespace LibraryNetCoreAPI.Utils
         public AutoMapperProfiles()
         {
             CreateMap<AutorCreacionDTO, Autor>();
+            CreateMap<Autor, AutorDTO>();
         }
     }
 }

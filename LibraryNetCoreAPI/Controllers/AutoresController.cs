@@ -24,9 +24,27 @@ namespace LibraryNetCoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Autor>> Get()
+        public async Task<List<AutorDTO>> Get()
         {
-            return await context.Autores.ToListAsync();
+            var autores = await context.Autores.ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AutorDTO>> Get(int id)
+        {
+            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
+            if (autor == null)
+                return NotFound($"El autor con id {id} no existe.");
+
+            return mapper.Map<AutorDTO>(autor);
+        }
+
+        [HttpGet("{nombre}")]
+        public async Task<ActionResult<List<AutorDTO>>> Get([FromRoute] string nombre)
+        {
+            var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
         }
 
         [HttpPost]
