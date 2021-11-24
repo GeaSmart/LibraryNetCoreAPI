@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI.DTO
 {
-    public class LibroCreacionDTO
+    public class ComentarioCreacionDTO
     {
         [Required]
-        [StringLength(maximumLength: 250)]
-        public string Titulo { get; set; }
-
-        public List<int> AutoresIds { get; set; }
+        public string Contenido { get; set; }
     }
 }

@@ -26,14 +26,34 @@ namespace LibraryNetCoreAPI.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<LibroDTO>> Get(int id)
         {
-            var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+            var libro = await context.Libros
+                .Include(x => x.AutoresLibros)                
+                .ThenInclude(x => x.Autor)                
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            libro.AutoresLibros = libro.AutoresLibros.OrderBy(x=>x.Orden).ToList(); //ordenando la lista de autores por el campo orden
             return mapper.Map<LibroDTO>(libro);
         }
 
         [HttpPost]
         public async Task<ActionResult>Post ([FromBody] LibroCreacionDTO libroCreacionDTO)
         {
+            if (libroCreacionDTO.AutoresIds == null)
+                return BadRequest("No se puede crear un libro sin autor");
+
+            var autoresIds = await context.Autores.Where(x => libroCreacionDTO.AutoresIds.Contains(x.Id))
+                .Select(x=>x.Id).ToListAsync();
+
+            if (autoresIds.Count != libroCreacionDTO.AutoresIds.Count)
+                return BadRequest("Se ingreso al menos un autor no registrado");
+
             var libro = mapper.Map<Libro>(libroCreacionDTO);
+
+            for(int i = 0; i < libro.AutoresLibros.Count; i++)
+            {
+                libro.AutoresLibros[i].Orden = i;
+            }
+
             context.Libros.Add(libro);
             await context.SaveChangesAsync();
             return Ok();
