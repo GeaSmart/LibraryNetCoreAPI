@@ -30,14 +30,17 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<AutorDTO>> Get(int id)
+        [HttpGet("{id:int}", Name = "ObtenerAutor")]
+        public async Task<ActionResult<AutorConLibrosDTO>> Get(int id)
         {
-            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
+            var autor = await context.Autores
+                .Include(x=>x.AutoresLibros)
+                .ThenInclude(x=>x.Libro)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (autor == null)
                 return NotFound($"El autor con id {id} no existe.");
 
-            return mapper.Map<AutorDTO>(autor);
+            return mapper.Map<AutorConLibrosDTO>(autor);
         }
 
         [HttpGet("{nombre}")]
@@ -59,7 +62,24 @@ namespace LibraryNetCoreAPI.Controllers
             context.Add(autor);
 
             await context.SaveChangesAsync();
-            return Ok();
+
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+            return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int id, AutorCreacionDTO autorCreacionDTO)
+        {
+            var existeAutor = await context.Autores.AnyAsync(x=>x.Id == id);
+            if (!existeAutor)
+                return NotFound("No existe el autor");
+
+            var autor = mapper.Map<Autor>(autorCreacionDTO);
+            autor.Id = id;
+
+            context.Update(autor);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

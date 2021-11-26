@@ -14,15 +14,30 @@ namespace LibraryNetCoreAPI.Utils
         {
             CreateMap<AutorCreacionDTO, Autor>();
             CreateMap<Autor, AutorDTO>();
-            CreateMap<Libro, LibroDTO>()
-                .ForMember(x => x.AutoresDTO, options => options.MapFrom(MapAutoresLibroDTO));
+            CreateMap<Autor, AutorConLibrosDTO>()
+                .ForMember(x => x.Libros, options => options.MapFrom(MapFromAutoresLibrosToLibrosDTO));
+            CreateMap<Libro, LibroDTO>();
+            CreateMap<Libro, LibroConAutoresDTO>()
+                .ForMember(x => x.Autores, options => options.MapFrom(MapFromAutoresLibrosToAutoresDTO));
             CreateMap<LibroCreacionDTO, Libro>()
                 .ForMember(x => x.AutoresLibros, options => options.MapFrom(MapAutoresLibros));
             CreateMap<ComentarioCreacionDTO, Comentario>();
             CreateMap<Comentario, ComentarioDTO>();
         }
 
-        private List<AutorDTO> MapAutoresLibroDTO(Libro libro, LibroDTO libroDTO)
+        private List<LibroDTO> MapFromAutoresLibrosToLibrosDTO(Autor autor, AutorDTO autorDTO)
+        {
+            List<LibroDTO> response = new List<LibroDTO>();
+            if (autor.AutoresLibros == null)
+                return response;
+
+            foreach(var item in autor.AutoresLibros)            
+                response.Add(new LibroDTO { Id = item.LibroId, Titulo = item.Libro.Titulo });
+            
+            return response;
+        }
+
+        private List<AutorDTO> MapFromAutoresLibrosToAutoresDTO(Libro libro, LibroDTO libroDTO)
         {
             List<AutorDTO> response = new List<AutorDTO>();
             if (libro.AutoresLibros == null)

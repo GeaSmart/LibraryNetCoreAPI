@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI.DTO
 {
-    public class LibroDTO
+    public class AutorConLibrosDTO : AutorDTO
     {
-        public int Id { get; set; }        
-        public string Titulo { get; set; }
-
-        
+        public List<LibroDTO> Libros { get; set; }
     }
 }

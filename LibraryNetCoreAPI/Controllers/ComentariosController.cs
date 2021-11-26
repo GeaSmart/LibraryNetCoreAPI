@@ -23,6 +23,18 @@ namespace LibraryNetCoreAPI.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet("{id:int}", Name = "ObtenerComentario")]
+        public async Task<ActionResult<ComentarioDTO>> GetById(int libroId, int id)
+        {
+            //el where asegura que el comentario corresponda al libro correcto
+            var comentario = await context.Comentarios.Where(x => x.LibroId == libroId).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (comentario == null)
+                return NotFound("Comentario no existe");
+
+            return mapper.Map<ComentarioDTO>(comentario);
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<ComentarioDTO>>> Get(int libroId)
         {
@@ -45,7 +57,30 @@ namespace LibraryNetCoreAPI.Controllers
             comentario.LibroId = libroId;
             context.Comentarios.Add(comentario);
             await context.SaveChangesAsync();
-            return Ok();
+
+            var comentarioDTO = mapper.Map<ComentarioDTO>(comentario);
+            //return Ok(); ya no se devuelve un simple Ok
+            return CreatedAtRoute("ObtenerComentario", new { id = comentario.Id, libroId = libroId }, comentarioDTO);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int id, int libroId,  ComentarioCreacionDTO comentarioCreacionDTO)
+        {
+            var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
+            if (!existeLibro)
+                return NotFound($"El libro con id {libroId} no existe");
+
+            var existeComentario = await context.Comentarios.AnyAsync(x => x.Id == id);
+            if (!existeComentario)
+                return NotFound($"El comentario con id {id} no existe");
+
+            var comentario = mapper.Map<Comentario>(comentarioCreacionDTO);
+            comentario.Id = id;
+            comentario.LibroId = libroId;
+
+            context.Comentarios.Update(comentario);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
