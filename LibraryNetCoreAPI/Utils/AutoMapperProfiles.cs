@@ -21,6 +21,7 @@ namespace LibraryNetCoreAPI.Utils
                 .ForMember(x => x.Autores, options => options.MapFrom(MapFromAutoresLibrosToAutoresDTO));
             CreateMap<LibroCreacionDTO, Libro>()
                 .ForMember(x => x.AutoresLibros, options => options.MapFrom(MapAutoresLibros));
+            CreateMap<LibroPatchDTO, Libro>().ReverseMap();
             CreateMap<ComentarioCreacionDTO, Comentario>();
             CreateMap<Comentario, ComentarioDTO>();
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -30,6 +31,9 @@ namespace LibraryNetCoreAPI.Controllers
                 .Include(x => x.AutoresLibros)
                 .ThenInclude(x => x.Autor)
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (libro == null)
+                return NotFound("El libro no existe");
 
             libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList(); //ordenando la lista de autores por el campo orden
             return mapper.Map<LibroConAutoresDTO>(libro);
@@ -84,5 +88,40 @@ namespace LibraryNetCoreAPI.Controllers
             }
         }
 
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> jsonPatchDocument)
+        {
+            if (jsonPatchDocument == null)
+                return BadRequest();
+
+            var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (libro == null)
+                return NotFound("Libro no existe");
+
+            var libroPatchDTO = mapper.Map<LibroPatchDTO>(libro); //lleno el jsonPatchDocument con el libro traido de la bd
+
+            jsonPatchDocument.ApplyTo(libroPatchDTO, ModelState); //le aplico los cambios que vinieron el el jsonPatchDocument
+
+            if (!TryValidateModel(libroPatchDTO))
+                return BadRequest(ModelState);
+
+            mapper.Map(libroPatchDTO,libro);
+
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var existeAutor = await context.Libros.AnyAsync(x => x.Id == id);
+            if (!existeAutor)
+                return NotFound("El autor no existe");
+
+            context.Libros.Remove(new Libro { Id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

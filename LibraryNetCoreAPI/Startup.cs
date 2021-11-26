@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI
@@ -27,9 +28,10 @@ namespace LibraryNetCoreAPI
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {            
+            services.AddControllers()
+                .AddNewtonsoftJson(); //Configuring NewtonsoftJson patch
 
-            services.AddControllers();
             services.AddDbContext<ApplicationDBContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("defaultConnection"));

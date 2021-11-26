@@ -82,5 +82,17 @@ namespace LibraryNetCoreAPI.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id, int libroId)
+        {
+            var existeComentario = await context.Comentarios.Where(x => x.LibroId == libroId).AnyAsync(x => x.Id == id);
+            if (!existeComentario)
+                return NotFound("El comentario no existe o no coincide con el libro especificado");
+
+            context.Comentarios.Remove(new Comentario { Id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

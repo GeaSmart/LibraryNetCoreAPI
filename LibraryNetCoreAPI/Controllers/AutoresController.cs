@@ -81,5 +81,17 @@ namespace LibraryNetCoreAPI.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var existeAutor = await context.Autores.AnyAsync(x => x.Id == id);
+            if (!existeAutor)
+                return NotFound("El autor no existe");
+
+            context.Autores.Remove(new Autor { Id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
