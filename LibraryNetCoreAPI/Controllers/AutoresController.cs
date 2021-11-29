@@ -3,6 +3,7 @@ using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,26 @@ namespace LibraryNetCoreAPI.Controllers
     {
         private readonly ApplicationDBContext context;
         private readonly IMapper mapper;
+        private readonly IConfiguration configuration;
 
-        public AutoresController(ApplicationDBContext context, IMapper mapper)
+        public AutoresController(ApplicationDBContext context, IMapper mapper, IConfiguration configuration)
         {
             this.context = context;
             this.mapper = mapper;
+            this.configuration = configuration;
+        }
+
+        [HttpGet("AppConfiguration")]
+        public ActionResult<List<string>> GetConfiguration()
+        {
+            var lista = new List<string>();
+            lista.Add(configuration["app-author"]);
+            lista.Add(configuration["connectionStrings:defaultConnection"]);
+            lista.Add(configuration.GetConnectionString("defaultConnection"));
+            lista.Add(configuration["user-secret-1"]);
+            lista.Add(configuration["test"]);
+
+            return lista;
         }
 
         [HttpGet]
