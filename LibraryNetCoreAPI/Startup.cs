@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,7 @@ namespace LibraryNetCoreAPI
     {
         public Startup(IConfiguration configuration)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             Configuration = configuration;
         }
 
@@ -104,6 +106,11 @@ namespace LibraryNetCoreAPI
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthorization(options =>
+                options.AddPolicy("isAdmin", x => x.RequireClaim("isAdmin"))
+                //options.AddPolicy("isSeller", x => x.RequireClaim("isSeller")) se puede agregar varias políticas segun usuarios
+            ) ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

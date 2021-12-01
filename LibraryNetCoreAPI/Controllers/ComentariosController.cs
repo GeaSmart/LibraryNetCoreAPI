@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,11 +19,13 @@ namespace LibraryNetCoreAPI.Controllers
     {
         private readonly ApplicationDBContext context;
         private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public ComentariosController(ApplicationDBContext context, IMapper mapper)
+        public ComentariosController(ApplicationDBContext context, IMapper mapper,UserManager<IdentityUser> userManager)
         {
             this.context = context;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         [HttpGet("{id:int}", Name = "ObtenerComentario")]
@@ -47,14 +52,22 @@ namespace LibraryNetCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDTO comentarioCreacionDTO)
         {
+            var emailClaim = HttpContext.User.Claims.Where(x => x.Type == "email").FirstOrDefault();
+            var email = emailClaim.Value;
+
+            var usuario = await userManager.FindByEmailAsync(email);
+            var usuarioId = usuario.Id;
+
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
             if (!existeLibro)
                 return NotFound($"El libro con id {libroId} no existe");
 
             var comentario = mapper.Map<Comentario>(comentarioCreacionDTO);
             comentario.LibroId = libroId;
+            comentario.UsuarioId = usuarioId;
             context.Comentarios.Add(comentario);
             await context.SaveChangesAsync();
 

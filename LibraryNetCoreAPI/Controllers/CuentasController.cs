@@ -1,4 +1,6 @@
 ﻿using LibraryNetCoreAPI.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -53,6 +55,20 @@ namespace LibraryNetCoreAPI.Controllers
                 return ConstruirToken(credencialesUsuario);
             else
                 return BadRequest("Credenciales incorrectas");
+        }
+
+        [HttpGet("renovarToken")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult<RespuestaAutenticacionDTO> Renovar()
+        {
+            var emailClaim = HttpContext.User.Claims.Where(x => x.Type == "email").FirstOrDefault();
+            var email = emailClaim.Value;
+
+            var credencialesUsuario = new CredencialesUsuarioDTO()
+            {
+                Email = email
+            };
+            return ConstruirToken(credencialesUsuario);
         }
 
         private RespuestaAutenticacionDTO ConstruirToken(CredencialesUsuarioDTO credencialesUsuario)

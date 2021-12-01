@@ -15,6 +15,7 @@ namespace LibraryNetCoreAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class AutoresController:ControllerBase
     {
         private readonly ApplicationDBContext context;
