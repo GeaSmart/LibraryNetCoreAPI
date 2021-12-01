@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace LibraryNetCoreAPI.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class CuentasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -64,7 +64,7 @@ namespace LibraryNetCoreAPI.Controllers
             };
 
             //firmando el JWT
-            var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["llaveJWT"])); //nos valemos del proveedor de configuracion appsettings.Development.json para guardar una llaveJWT
+            var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTKey"])); //nos valemos del proveedor de configuracion appsettings.Development.json para guardar una llaveJWT
             var credenciales = new SigningCredentials(llave, SecurityAlgorithms.HmacSha256);
             var expiracion = DateTime.UtcNow.AddDays(7);//se puede configurar cualquier espacio de tiempo de validez de un token según las reglas de negocio
 
