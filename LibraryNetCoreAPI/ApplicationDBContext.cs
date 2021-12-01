@@ -1,4 +1,5 @@
 ﻿using LibraryNetCoreAPI.Entidades;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI
 {
-    public class ApplicationDBContext : DbContext
+    public class ApplicationDBContext : IdentityDbContext //DbContext
     {
         public ApplicationDBContext(DbContextOptions options) : base(options)
         {
