@@ -110,7 +110,12 @@ namespace LibraryNetCoreAPI
             services.AddAuthorization(options =>
                 options.AddPolicy("isAdmin", x => x.RequireClaim("isAdmin"))
                 //options.AddPolicy("isSeller", x => x.RequireClaim("isSeller")) se puede agregar varias políticas segun usuarios
-            ) ;
+            );
+
+            //Habilitacion de CORS
+            services.AddCors( options =>
+                options.AddDefaultPolicy( x => x.WithOrigins("").AllowAnyMethod().AllowAnyHeader())                    
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,6 +129,8 @@ namespace LibraryNetCoreAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
