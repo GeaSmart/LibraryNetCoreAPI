@@ -39,7 +39,7 @@ namespace LibraryNetCoreAPI.Controllers
             if (resultado.Succeeded)
             {
                 //retorno del jwt
-                return ConstruirToken(credencialesUsuario);
+                return await ConstruirToken(credencialesUsuario);
             }
             else
             {
@@ -52,14 +52,14 @@ namespace LibraryNetCoreAPI.Controllers
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
             if (resultado.Succeeded)
-                return ConstruirToken(credencialesUsuario);
+                return await ConstruirToken(credencialesUsuario);
             else
                 return BadRequest("Credenciales incorrectas");
         }
 
         [HttpGet("renovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public ActionResult<RespuestaAutenticacionDTO> Renovar()
+        public async Task<ActionResult<RespuestaAutenticacionDTO>> Renovar()
         {
             var emailClaim = HttpContext.User.Claims.Where(x => x.Type == "email").FirstOrDefault();
             var email = emailClaim.Value;
@@ -68,16 +68,22 @@ namespace LibraryNetCoreAPI.Controllers
             {
                 Email = email
             };
-            return ConstruirToken(credencialesUsuario);
+            return await ConstruirToken(credencialesUsuario);
         }
 
-        private RespuestaAutenticacionDTO ConstruirToken(CredencialesUsuarioDTO credencialesUsuario)
+        private async Task<RespuestaAutenticacionDTO> ConstruirToken(CredencialesUsuarioDTO credencialesUsuario)
         {
             //creamos los claims, que son informaciones emitidas por una fuente confiable, pueden contener cualquier key/value que definamos y que son añadidas al TOKEN
             var claims = new List<Claim>()
             {
                 new Claim("email",credencialesUsuario.Email) //Nunca enviar data sensible en un claim, ya que es leído por el cliente
             };
+
+            //añadiendo claims de roles
+            var usuario = await userManager.FindByEmailAsync(credencialesUsuario.Email);
+            var claimsDB = await userManager.GetClaimsAsync(usuario);//obtengo los claims de la base de datos
+            claims.AddRange(claimsDB);//añado los claims que el usuario tenga registrados a los claims que ya posee
+
 
             //firmando el JWT
             var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTKey"])); //nos valemos del proveedor de configuracion appsettings.Development.json para guardar una llaveJWT
@@ -90,7 +96,24 @@ namespace LibraryNetCoreAPI.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(securityToken),
                 Expiracion = expiracion
             };
+        }
 
+        [HttpPost("hacerAdmin")]
+        public async Task<ActionResult> HacerAdmin(EditarAdminDTO editarAdmin)
+        {
+            var usuario = await userManager.FindByEmailAsync(editarAdmin.Email);
+            await userManager.AddClaimAsync(usuario, new Claim("isAdmin", "1"));
+
+            return NoContent();
+        }
+
+        [HttpPost("removerAdmin")]
+        public async Task<ActionResult> RemoverAdmin(EditarAdminDTO editarAdmin)
+        {
+            var usuario = await userManager.FindByEmailAsync(editarAdmin.Email);
+            await userManager.RemoveClaimAsync(usuario, new Claim("isAdmin", "1"));
+
+            return NoContent();
         }
     }
 }
