@@ -1,6 +1,8 @@
 ﻿using LibraryNetCoreAPI.DTO;
+using LibraryNetCoreAPI.Servicios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LibraryNetCoreAPI.Controllers
@@ -22,12 +25,70 @@ namespace LibraryNetCoreAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly HashService hashService;
+        private readonly IDataProtector dataProtector;
 
-        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager) //hemos inyectado estos servicios necesarios
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, 
+            SignInManager<IdentityUser> signInManager,
+            IDataProtectionProvider dataProtectionProvider,
+            HashService hashService) //hemos inyectado estos servicios necesarios
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.hashService = hashService;
+            this.dataProtector = dataProtectionProvider.CreateProtector("string_secreto_de_proposito");
+        }
+
+        [HttpGet("hash/{textoPlano}")]
+        public ActionResult AplicarHash(string textoPlano)
+        {
+            var resultado1 = hashService.Hash(textoPlano);
+            var resultado2 = hashService.Hash(textoPlano);
+
+            return Ok(
+                new
+                {
+                    textoPlano = textoPlano,
+                    hash1 = resultado1,
+                    hash2 = resultado2
+                }    
+            );
+        }
+
+        [HttpGet("encriptar")]
+        public ActionResult Encriptar()
+        {
+            var textoPlano = "Gerson Azabache Net Core";
+            var textoCifrado = dataProtector.Protect(textoPlano);
+            var textoDescifrado = dataProtector.Unprotect(textoCifrado);
+
+            return Ok(
+                new {
+                    textoPlano = textoPlano,
+                    textoCifrado = textoCifrado,
+                    textoDescifrado = textoDescifrado
+                }
+            );
+        }
+
+        [HttpGet("encriptarConExpiracion")]
+        public ActionResult EncriptarConExpiracion()
+        {
+            var textoPlano = "Gerson Azabache Net Core";
+            var dataProtectorConExpiracion = dataProtector.ToTimeLimitedDataProtector();
+            var textoCifrado = dataProtectorConExpiracion.Protect(textoPlano, lifetime: TimeSpan.FromSeconds(5));
+            Thread.Sleep(5000);
+            var textoDescifrado = dataProtectorConExpiracion.Unprotect(textoCifrado);
+
+            return Ok(
+                new
+                {
+                    textoPlano = textoPlano,
+                    textoCifrado = textoCifrado,
+                    textoDescifrado = textoDescifrado
+                }
+            );
         }
 
         [HttpPost("registrar")] //esto hace que la ruta sea api/cuentas/registrar

@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Servicios\" />
     <Folder Include="Validaciones\" />
   </ItemGroup>
 

@@ -1,3 +1,4 @@
+using LibraryNetCoreAPI.Servicios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -112,10 +113,16 @@ namespace LibraryNetCoreAPI
                 //options.AddPolicy("isSeller", x => x.RequireClaim("isSeller")) se puede agregar varias políticas segun usuarios
             );
 
+            //Encriptacion y desencriptación
+            services.AddDataProtection();
+
             //Habilitacion de CORS
             services.AddCors( options =>
                 options.AddDefaultPolicy( x => x.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader())                    
             );
+
+            //servicio de hash
+            services.AddTransient<HashService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
