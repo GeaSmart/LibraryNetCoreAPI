@@ -28,7 +28,7 @@ namespace LibraryNetCoreAPI.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet("{id:int}", Name = "ObtenerComentario")]
+        [HttpGet("{id:int}", Name = "obtenerComentario")]
         public async Task<ActionResult<ComentarioDTO>> GetById(int libroId, int id)
         {
             //el where asegura que el comentario corresponda al libro correcto
@@ -40,7 +40,7 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<ComentarioDTO>(comentario);
         }
 
-        [HttpGet]
+        [HttpGet(Name = "obtenerComentariosPorLibro")]
         public async Task<ActionResult<List<ComentarioDTO>>> Get(int libroId)
         {
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
@@ -51,7 +51,7 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<List<ComentarioDTO>>(comentarios);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "crearComentario")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDTO comentarioCreacionDTO)
         {
@@ -73,10 +73,10 @@ namespace LibraryNetCoreAPI.Controllers
 
             var comentarioDTO = mapper.Map<ComentarioDTO>(comentario);
             //return Ok(); ya no se devuelve un simple Ok
-            return CreatedAtRoute("ObtenerComentario", new { id = comentario.Id, libroId = libroId }, comentarioDTO);
+            return CreatedAtRoute("obtenerComentario", new { id = comentario.Id, libroId = libroId }, comentarioDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "actualizarComentario")]
         public async Task<ActionResult> Put(int id, int libroId,  ComentarioCreacionDTO comentarioCreacionDTO)
         {
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
@@ -96,7 +96,7 @@ namespace LibraryNetCoreAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "borrarComentario")]
         public async Task<ActionResult> Delete(int id, int libroId)
         {
             var existeComentario = await context.Comentarios.Where(x => x.LibroId == libroId).AnyAsync(x => x.Id == id);

@@ -91,7 +91,7 @@ namespace LibraryNetCoreAPI.Controllers
             );
         }
 
-        [HttpPost("registrar")] //esto hace que la ruta sea api/cuentas/registrar
+        [HttpPost("registrar", Name = "registrarUsuario")] //esto hace que la ruta sea api/cuentas/registrar
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Registrar(CredencialesUsuarioDTO credencialesUsuario)
         {
             var identityUser = new IdentityUser { UserName = credencialesUsuario.Email, Email = credencialesUsuario.Email };
@@ -108,7 +108,7 @@ namespace LibraryNetCoreAPI.Controllers
             }
         }
 
-        [HttpPost("login")] //esto hace que la ruta sea api/cuentas/registrar
+        [HttpPost("login", Name = "loginUsuario")] //esto hace que la ruta sea api/cuentas/registrar
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Login(CredencialesUsuarioDTO credencialesUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
@@ -118,7 +118,7 @@ namespace LibraryNetCoreAPI.Controllers
                 return BadRequest("Credenciales incorrectas");
         }
 
-        [HttpGet("renovarToken")]
+        [HttpGet("renovarToken", Name = "renovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Renovar()
         {
@@ -159,7 +159,7 @@ namespace LibraryNetCoreAPI.Controllers
             };
         }
 
-        [HttpPost("hacerAdmin")]
+        [HttpPost("hacerAdmin", Name = "hacerAdmin")]
         public async Task<ActionResult> HacerAdmin(EditarAdminDTO editarAdmin)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdmin.Email);
@@ -168,7 +168,7 @@ namespace LibraryNetCoreAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("removerAdmin")]
+        [HttpPost("removerAdmin", Name = "removerAdmin")]
         public async Task<ActionResult> RemoverAdmin(EditarAdminDTO editarAdmin)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdmin.Email);

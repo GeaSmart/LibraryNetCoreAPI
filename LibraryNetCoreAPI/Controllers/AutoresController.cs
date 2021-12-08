@@ -42,7 +42,7 @@ namespace LibraryNetCoreAPI.Controllers
             return lista;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "obtenerAutores")]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]        
         public async Task<List<AutorDTO>> Get()
         {
@@ -50,7 +50,7 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}", Name = "ObtenerAutor")]
+        [HttpGet("{id:int}", Name = "obtenerAutor")]
         public async Task<ActionResult<AutorConLibrosDTO>> Get(int id)
         {
             var autor = await context.Autores
@@ -63,14 +63,14 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<AutorConLibrosDTO>(autor);
         }
 
-        [HttpGet("{nombre}")]
+        [HttpGet("{nombre}", Name = "obtenerAutorPorNombre")]
         public async Task<ActionResult<List<AutorDTO>>> Get([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "crearAutor")]
         public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacionDTO)
         {
             var existe = await context.Autores.AnyAsync(x => x.Nombre == autorCreacionDTO.Nombre);
@@ -84,10 +84,10 @@ namespace LibraryNetCoreAPI.Controllers
             await context.SaveChangesAsync();
 
             var autorDTO = mapper.Map<AutorDTO>(autor);
-            return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
+            return CreatedAtRoute("obtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "actualizarAutor")]
         public async Task<ActionResult> Put(int id, AutorCreacionDTO autorCreacionDTO)
         {
             var existeAutor = await context.Autores.AnyAsync(x=>x.Id == id);
@@ -102,7 +102,7 @@ namespace LibraryNetCoreAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "borrarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existeAutor = await context.Autores.AnyAsync(x => x.Id == id);

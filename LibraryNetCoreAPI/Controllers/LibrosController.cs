@@ -24,7 +24,7 @@ namespace LibraryNetCoreAPI.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("{id:int}", Name = "ObtenerLibro")]
+        [HttpGet("{id:int}", Name = "obtenerLibro")]
         public async Task<ActionResult<LibroConAutoresDTO>> Get(int id)
         {
             var libro = await context.Libros
@@ -39,7 +39,7 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<LibroConAutoresDTO>(libro);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "crearLibro")]
         public async Task<ActionResult> Post([FromBody] LibroCreacionDTO libroCreacionDTO)
         {
             if (libroCreacionDTO.AutoresIds == null)
@@ -60,10 +60,10 @@ namespace LibraryNetCoreAPI.Controllers
 
             var libroDTO = mapper.Map<LibroDTO>(libro);
             //return Ok();
-            return CreatedAtRoute("ObtenerLibro", new { id = libro.Id }, libroDTO);
+            return CreatedAtRoute("obtenerLibro", new { id = libro.Id }, libroDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "actualizarLibro")]
         public async Task<ActionResult> Put(int id, LibroCreacionDTO libroCreacionDTO)
         {
             var libro = await context.Libros.Include(x => x.AutoresLibros).FirstOrDefaultAsync(x => x.Id == id);
@@ -88,7 +88,7 @@ namespace LibraryNetCoreAPI.Controllers
             }
         }
 
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:int}", Name = "patchLibro")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> jsonPatchDocument)
         {
             if (jsonPatchDocument == null)
@@ -112,7 +112,7 @@ namespace LibraryNetCoreAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "borrarLibro")]
         public async Task<ActionResult> Delete(int id)
         {
             var existeAutor = await context.Libros.AnyAsync(x => x.Id == id);
