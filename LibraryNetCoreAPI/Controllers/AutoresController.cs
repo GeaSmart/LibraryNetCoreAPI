@@ -60,7 +60,28 @@ namespace LibraryNetCoreAPI.Controllers
             if (autor == null)
                 return NotFound($"El autor con id {id} no existe.");
 
-            return mapper.Map<AutorConLibrosDTO>(autor);
+            var dto =  mapper.Map<AutorConLibrosDTO>(autor);
+            GenerarEnlaces(dto);
+            return dto;
+        }
+
+        private void GenerarEnlaces(AutorDTO autorDTO)
+        {
+            autorDTO.Enlaces.Add(new HateoasDTO(
+                enlace:Url.Link("obtenerAutor", new { id = autorDTO.Id }),
+                descripcion:"self",
+                metodo:"GET"
+                ));
+            autorDTO.Enlaces.Add(new HateoasDTO(
+                enlace: Url.Link("actualizarAutor", new { id = autorDTO.Id }),
+                descripcion: "autor-actualizar",
+                metodo: "PUT"
+                ));
+            autorDTO.Enlaces.Add(new HateoasDTO(
+                enlace: Url.Link("borrarAutor", new { id = autorDTO.Id }),
+                descripcion: "autor-borrar",
+                metodo: "DELETE"
+                ));
         }
 
         [HttpGet("{nombre}", Name = "obtenerAutorPorNombre")]
