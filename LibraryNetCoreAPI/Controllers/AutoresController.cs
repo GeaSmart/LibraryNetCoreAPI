@@ -43,7 +43,7 @@ namespace LibraryNetCoreAPI.Controllers
         }
 
         [HttpGet(Name = "obtenerAutores")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]        
+        [AllowAnonymous]  
         public async Task<List<AutorDTO>> Get()
         {
             var autores = await context.Autores.ToListAsync();
