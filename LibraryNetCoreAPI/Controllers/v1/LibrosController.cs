@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LibraryNetCoreAPI.Controllers
+namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDBContext context;

@@ -11,10 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LibraryNetCoreAPI.Controllers
+namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class AutoresController:ControllerBase
     {
@@ -42,7 +42,7 @@ namespace LibraryNetCoreAPI.Controllers
             return lista;
         }
 
-        [HttpGet(Name = "obtenerAutores")]
+        [HttpGet(Name = "obtenerAutoresv1")]
         [AllowAnonymous]  
         public async Task<List<AutorDTO>> Get()
         {
@@ -50,7 +50,7 @@ namespace LibraryNetCoreAPI.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}", Name = "obtenerAutor")]
+        [HttpGet("{id:int}", Name = "obtenerAutorv1")]
         public async Task<ActionResult<AutorConLibrosDTO>> Get(int id)
         {
             var autor = await context.Autores
@@ -84,7 +84,7 @@ namespace LibraryNetCoreAPI.Controllers
                 ));
         }
 
-        [HttpGet("{nombre}", Name = "obtenerAutorPorNombre")]
+        [HttpGet("{nombre}", Name = "obtenerAutorPorNombrev1")]
         public async Task<ActionResult<List<AutorDTO>>> Get([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
@@ -108,7 +108,7 @@ namespace LibraryNetCoreAPI.Controllers
             return CreatedAtRoute("obtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id:int}", Name = "actualizarAutor")]
+        [HttpPut("{id:int}", Name = "actualizarAutorv1")]
         public async Task<ActionResult> Put(int id, AutorCreacionDTO autorCreacionDTO)
         {
             var existeAutor = await context.Autores.AnyAsync(x=>x.Id == id);
@@ -123,7 +123,7 @@ namespace LibraryNetCoreAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}", Name = "borrarAutor")]
+        [HttpDelete("{id:int}", Name = "borrarAutorv1")]
         public async Task<ActionResult> Delete(int id)
         {
             var existeAutor = await context.Autores.AnyAsync(x => x.Id == id);

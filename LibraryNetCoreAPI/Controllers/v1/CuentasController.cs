@@ -16,10 +16,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LibraryNetCoreAPI.Controllers
+namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class CuentasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
