@@ -1,4 +1,5 @@
 using LibraryNetCoreAPI.Servicios;
+using LibraryNetCoreAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,8 +37,10 @@ namespace LibraryNetCoreAPI
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
-            services.AddControllers()
+        {
+            services.AddControllers(options =>
+                options.Conventions.Add(new SwaggerAgruparPorVersion())
+            )
                 .AddNewtonsoftJson(); //Configuring NewtonsoftJson patch
 
             services.AddDbContext<ApplicationDBContext>(options =>
@@ -51,13 +54,10 @@ namespace LibraryNetCoreAPI
 
             services.AddSwaggerGen(config =>
             {
-                config.SwaggerDoc("v1",
-                    new Microsoft.OpenApi.Models.OpenApiInfo() //Swashbuckle.AspNetCore.Swagger.info() se usa en versiones anteriores
-                    {
-                        Title = "Ejemplo de swagger",
-                        Description = "Esta es una documentación de swagger, aquí tambien puede ir información necesaria para utilizar el Api, etc..."
-                    }
-                );
+                config.SwaggerDoc("v1", new OpenApiInfo() { Title = "Web API", Description = "v1" });
+                config.SwaggerDoc("v2", new OpenApiInfo() { Title = "Web API", Description = "v2" });
+
+
                 config.IncludeXmlComments(xmlPath);
 
                 config.AddSecurityDefinition("Bearer",
@@ -150,7 +150,8 @@ namespace LibraryNetCoreAPI
             app.UseSwagger();
             app.UseSwaggerUI(config =>
             {
-                config.SwaggerEndpoint("/swagger/v1/swagger.json", "API SWAGGER!");
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                config.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
                 config.RoutePrefix = ""; //para evitar problemas con la ruta en la que se lanza la aplicación al correr el proyecto
             }
             );
