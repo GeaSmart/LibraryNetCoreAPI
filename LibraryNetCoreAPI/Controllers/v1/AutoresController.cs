@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
+using LibraryNetCoreAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,11 @@ using System.Threading.Tasks;
 namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
+    //[Route("api/v1/[controller]")]
+    [VersionHeader("version","1")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class AutoresController:ControllerBase
     {
         private readonly ApplicationDBContext context;
@@ -42,6 +46,10 @@ namespace LibraryNetCoreAPI.Controllers.v1
             return lista;
         }
 
+        /// <summary>
+        /// Obtiene todos los autores
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "obtenerAutoresv1")]
         [AllowAnonymous]  
         public async Task<List<AutorDTO>> Get()
@@ -50,7 +58,14 @@ namespace LibraryNetCoreAPI.Controllers.v1
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
+        /// <summary>
+        /// Obtiene un autor
+        /// </summary>
+        /// <param name="id">Id del autor</param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "obtenerAutorv1")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<AutorConLibrosDTO>> Get(int id)
         {
             var autor = await context.Autores

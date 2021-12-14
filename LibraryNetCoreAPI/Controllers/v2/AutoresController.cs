@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
+using LibraryNetCoreAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,9 @@ using System.Threading.Tasks;
 namespace LibraryNetCoreAPI.Controllers.v2
 {
     [ApiController]
-    [Route("api/v2/[controller]")]
+    [Route("api/[controller]")]
+    //[Route("api/v2/[controller]")]
+    [VersionHeader("version","2")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class AutoresController:ControllerBase
     {

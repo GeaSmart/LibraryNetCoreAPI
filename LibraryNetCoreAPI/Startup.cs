@@ -23,6 +23,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 namespace LibraryNetCoreAPI
 {
     public class Startup
@@ -54,8 +55,26 @@ namespace LibraryNetCoreAPI
 
             services.AddSwaggerGen(config =>
             {
-                config.SwaggerDoc("v1", new OpenApiInfo() { Title = "Web API", Description = "v1" });
+                config.SwaggerDoc("v1", new OpenApiInfo() { 
+                    Title = "Web API",
+                    Description = "Este es un api para el control de una biblioteca, donde se manejan libros y autores, también comentarios de libros",
+                    Version = "version 1",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Gerson Azabache",
+                        Email = "gerson@bravedeveloper.com",
+                        Url = new Uri("https://bravedeveloper.com")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT"
+                    },
+                    TermsOfService = new Uri("https://www.washingtonpost.com/terms-of-service/2011/11/18/gIQAldiYiN_story.html")
+                });
+
                 config.SwaggerDoc("v2", new OpenApiInfo() { Title = "Web API", Description = "v2" });
+
+                config.OperationFilter<AgregarHeaderVersion>();
 
 
                 config.IncludeXmlComments(xmlPath);
