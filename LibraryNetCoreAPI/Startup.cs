@@ -137,7 +137,8 @@ namespace LibraryNetCoreAPI
 
             //Habilitacion de CORS
             services.AddCors( options =>
-                options.AddDefaultPolicy( x => x.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader())                    
+                options.AddDefaultPolicy( x => x.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader()
+                .WithExposedHeaders(new string[] { "cantidadTotalRegistros" }))
             );
 
             //servicio de hash

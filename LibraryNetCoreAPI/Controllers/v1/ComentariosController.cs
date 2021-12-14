@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryNetCoreAPI.DTO;
 using LibraryNetCoreAPI.Entidades;
+using LibraryNetCoreAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -41,13 +42,16 @@ namespace LibraryNetCoreAPI.Controllers.v1
         }
 
         [HttpGet(Name = "obtenerComentariosPorLibro")]
-        public async Task<ActionResult<List<ComentarioDTO>>> Get(int libroId)
+        public async Task<ActionResult<List<ComentarioDTO>>> Get(int libroId,[FromQuery] PaginacionDTO paginacionDTO)
         {
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
             if (!existeLibro)
                 return NotFound($"El libro con id {libroId} no existe");
 
-            var comentarios = await context.Comentarios.Where(x => x.LibroId == libroId).ToListAsync();
+            var queryable = context.Comentarios.Where(x => x.LibroId == libroId).AsQueryable();//movimos el where aquí porque el conteo de registros lo queremos con el filtro aplicado
+            await HttpContext.InsertarPaginacionHeader(queryable);
+
+            var comentarios = await queryable.OrderBy(x=>x.Id).Paginar(paginacionDTO).ToListAsync();
             return mapper.Map<List<ComentarioDTO>>(comentarios);
         }
 

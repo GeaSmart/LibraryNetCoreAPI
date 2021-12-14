@@ -52,9 +52,12 @@ namespace LibraryNetCoreAPI.Controllers.v1
         /// <returns></returns>
         [HttpGet(Name = "obtenerAutoresv1")]
         [AllowAnonymous]  
-        public async Task<List<AutorDTO>> Get()
+        public async Task<List<AutorDTO>> Get([FromQuery]PaginacionDTO paginacionDTO)
         {
-            var autores = await context.Autores.ToListAsync();
+            var queryable = context.Autores.AsQueryable();
+            await HttpContext.InsertarPaginacionHeader(queryable);//aquí estamos enviando al cliente la cantidad de registros en la cabecera
+            //var autores = await context.Autores.ToListAsync();
+            var autores = await queryable.OrderBy(x => x.Nombre).Paginar(paginacionDTO).ToListAsync();//aqui paginamos, se recomienda ordenar por algún campo, en este caso el nombre
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
