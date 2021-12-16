@@ -11,7 +11,7 @@ namespace LibraryNetCoreAPI.Entidades
         public int Id { get; set; }
 
         [Required]
-        [StringLength(maximumLength: 250)]
+        [StringLength(maximumLength: 250)]        
         public string Titulo { get; set; }
 
         public DateTime FechaPublicacion { get; set; }
