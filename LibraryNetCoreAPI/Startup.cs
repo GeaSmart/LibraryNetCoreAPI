@@ -1,3 +1,4 @@
+using LibraryNetCoreAPI.Filtros;
 using LibraryNetCoreAPI.Servicios;
 using LibraryNetCoreAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,7 +41,10 @@ namespace LibraryNetCoreAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(options =>
-                options.Conventions.Add(new SwaggerAgruparPorVersion())
+                {
+                    options.Filters.Add(typeof(FiltroExcepciones));
+                    options.Conventions.Add(new SwaggerAgruparPorVersion());
+                }
             )
                 .AddNewtonsoftJson(); //Configuring NewtonsoftJson patch
 
@@ -143,6 +147,9 @@ namespace LibraryNetCoreAPI
 
             //servicio de hash
             services.AddTransient<HashService>();
+
+            //application insights for azure debugging
+            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:ConnectionString"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
