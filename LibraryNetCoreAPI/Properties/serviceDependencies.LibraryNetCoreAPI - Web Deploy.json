@@ -11,6 +11,12 @@
       "type": "mssql.azure",
       "connectionId": "connectionStrings:defaultConnection",
       "secretStore": "AzureAppSettings"
+    },
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/LibraryNetCoreAPI",
+      "type": "appInsights.azure",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING",
+      "secretStore": "AzureAppSettings"
     }
   }
 }
