@@ -23,6 +23,11 @@ namespace LibraryNetCoreAPI.Utils
             //aquí va la lógica que le dice al api si la petición http tiene la cabecera y valor indicado va a utilizar el endpoint donde se encuentra este atributo
             var cabeceras = context.RouteContext.HttpContext.Request.Headers;
 
+            var method = context.RouteContext.HttpContext.Request.Method;
+
+            if (method != "GET")
+                return true;
+
             if (!cabeceras.ContainsKey(cabecera))
                 return false;
 
