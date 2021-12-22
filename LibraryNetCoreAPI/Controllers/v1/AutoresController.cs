@@ -47,7 +47,7 @@ namespace LibraryNetCoreAPI.Controllers.v1
         }
 
         /// <summary>
-        /// Obtiene todos los autores-texto añadido de prueba 1
+        /// Obtiene todos los autores-Contenido añadido para probar pipelines en la versión 1 del api
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "obtenerAutoresv1")]

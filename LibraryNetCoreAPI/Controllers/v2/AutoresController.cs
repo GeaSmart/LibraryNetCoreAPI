@@ -45,6 +45,10 @@ namespace LibraryNetCoreAPI.Controllers.v2
             return lista;
         }
 
+        /// <summary>
+        /// Obtiene todos los autores-Contenido añadido para probar pipelines en la versión 2 del api
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "obtenerAutoresv2")]
         [AllowAnonymous]  
         public async Task<List<AutorDTO>> Get()
