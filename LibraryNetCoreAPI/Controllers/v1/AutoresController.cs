@@ -47,7 +47,7 @@ namespace LibraryNetCoreAPI.Controllers.v1
         }
 
         /// <summary>
-        /// Obtiene todos los autores
+        /// Obtiene todos los autores-texto añadido de prueba 1
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "obtenerAutoresv1")]
