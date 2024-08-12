@@ -15,9 +15,7 @@ using System.Threading.Tasks;
 namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
-    //[Route("api/v1/[controller]")]
-    [VersionHeader("version","1")]
+    [Route("api/v1/[controller]")]    
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class AutoresController:ControllerBase
@@ -66,9 +64,7 @@ namespace LibraryNetCoreAPI.Controllers.v1
         /// </summary>
         /// <param name="id">Id del autor</param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name = "obtenerAutorv1")]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [HttpGet("{id:int}", Name = "obtenerAutor")]
         public async Task<ActionResult<AutorConLibrosDTO>> Get(int id)
         {
             var autor = await context.Autores

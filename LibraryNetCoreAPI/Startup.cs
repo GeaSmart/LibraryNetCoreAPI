@@ -78,7 +78,7 @@ namespace LibraryNetCoreAPI
 
                 config.SwaggerDoc("v2", new OpenApiInfo() { Title = "Web API", Description = "v2" });
 
-                config.OperationFilter<AgregarHeaderVersion>();
+                //config.OperationFilter<AgregarHeaderVersion>();
 
 
                 config.IncludeXmlComments(xmlPath);
@@ -166,6 +166,8 @@ namespace LibraryNetCoreAPI
 
             app.UseCors();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -182,6 +184,14 @@ namespace LibraryNetCoreAPI
                 config.RoutePrefix = ""; //para evitar problemas con la ruta en la que se lanza la aplicación al correr el proyecto
             }
             );
+
+            //Scope
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                //Auto-migrations
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                db.Database.Migrate();
+            }
         }
     }
 }

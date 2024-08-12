@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace LibraryNetCoreAPI.Controllers.v1
 {
     [ApiController]
-    [Route("api/v1/libros/{libroId:int}/comentarios")]
+    [Route("api/v1/Libros/{libroId:int}/comentarios")]
     public class ComentariosController : ControllerBase
     {
         private readonly ApplicationDBContext context;
